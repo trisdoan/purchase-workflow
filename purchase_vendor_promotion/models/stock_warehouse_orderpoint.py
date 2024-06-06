@@ -12,6 +12,20 @@ class StockWarehouseOrderpoint(models.Model):
     )
     promotion_date_start = fields.Date(compute="_compute_promotion", store=True)
     promotion_date_end = fields.Date(compute="_compute_promotion", store=True)
+    supplier_id = fields.Many2one(
+        compute="_compute_supplier_id", readonly=False, store=True
+    )
+
+    @api.depends("route_id", "route_id.is_force_default_vendor")
+    def _compute_supplier_id(self):
+        for rec in self:
+            if rec.route_id and rec.route_id.is_force_default_vendor:
+                suppliers = rec.product_id._prepare_sellers(False).filtered(
+                    lambda x: x.is_promotion and x._is_promotion_active()
+                )
+                suppliers = suppliers.sorted(key=lambda x: x.price)
+                if suppliers:
+                    rec.supplier_id = suppliers[0].id
 
     @api.depends("supplier_id")
     def _compute_promotion(self):

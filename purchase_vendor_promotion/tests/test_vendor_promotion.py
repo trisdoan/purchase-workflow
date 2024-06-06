@@ -55,6 +55,8 @@ class TestVendorPromotion(TransactionCase):
                 },
             ]
         )
+        cls.buy_route = cls.env.ref("purchase_stock.route_warehouse0_buy",
+                                    raise_if_not_found=False)
 
     def test_promotion_dates_validation(self):
         with self.assertRaises(ValidationError):
@@ -103,3 +105,23 @@ class TestVendorPromotion(TransactionCase):
             )
         )
         self.assertEqual(orderpoint.promotion_period, "2024-01-01 - 2024-12-31")
+
+    def test_default_supplier(self):
+        orderpoint = (
+            self.env["stock.warehouse.orderpoint"]
+            .with_company(self.company_a)
+            .create(
+                {
+                    "product_id": self.product.id,
+                    "product_min_qty": 1,
+                    "route_id": self.buy_route.id,
+                }
+            )
+        )
+        self.assertFalse(orderpoint.supplier_id)
+        # Mark Buy Route as Force Default Vendor
+        self.buy_route.is_force_default_vendor = True
+        default_vendor = self.product.seller_ids.filtered(
+            lambda x: x.partner_id == self.vendor2
+        )
+        self.assertEqual(orderpoint.supplier_id, default_vendor)

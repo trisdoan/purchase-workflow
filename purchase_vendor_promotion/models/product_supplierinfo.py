@@ -22,3 +22,13 @@ class ProductSupplierinfo(models.Model):
                     raise ValidationError(
                         _("Promotion start date must be before end date.")
                     )
+
+    def _is_promotion_active(self, date=None):
+        self.ensure_one()
+        if not date:
+            date = fields.Date.today()
+        if not self.date_start:
+            return self.date_end >= date
+        if not self.date_end:
+            return date >= self.date_start
+        return date >= self.date_start and date <= self.date_end
