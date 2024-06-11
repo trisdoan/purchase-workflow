@@ -7,4 +7,4 @@ from odoo import fields, models
 class StockRoute(models.Model):
     _inherit = "stock.route"
 
-    is_force_default_vendor = fields.Boolean(default=False)
+    force_vendor_with_best_promotion = fields.Boolean(default=False)

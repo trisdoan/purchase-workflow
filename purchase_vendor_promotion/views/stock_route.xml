@@ -1,10 +1,10 @@
 <odoo>
-     <record model="ir.ui.view" id="stock_route_form_view">
+    <record model="ir.ui.view" id="stock_route_form_view">
         <field name="model">stock.route</field>
         <field name="inherit_id" ref="stock.stock_location_route_form_view" />
         <field name="arch" type="xml">
             <field name="active" position="after">
-                <field name="is_force_default_vendor" />
+                <field name="force_vendor_with_best_promotion" />
             </field>
         </field>
     </record>

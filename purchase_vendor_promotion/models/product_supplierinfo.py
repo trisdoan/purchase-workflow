@@ -23,12 +23,13 @@ class ProductSupplierinfo(models.Model):
                         _("Promotion start date must be before end date.")
                     )
 
-    def _is_promotion_active(self, date=None):
+    def _is_promotion_active_or_upcoming(self, date=None):
+        """
+        Consider Promotion is active if it's within start and end date or it's in the future
+        """
         self.ensure_one()
+        if not self.is_promotion:
+            return False
         if not date:
             date = fields.Date.today()
-        if not self.date_start:
-            return self.date_end >= date
-        if not self.date_end:
-            return date >= self.date_start
-        return date >= self.date_start and date <= self.date_end
+        return date <= self.date_start or (self.date_start <= date <= self.date_end)

@@ -12,6 +12,7 @@
     "license": "AGPL-3",
     "depends": ["purchase_stock"],
     "data": [
+        "data/stock_route.xml",
         "views/product_views.xml",
         "views/stock_orderpoint_views.xml",
         "views/purchase_order_views.xml",
